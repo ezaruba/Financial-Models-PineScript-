@@ -1,0 +1,293 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © SegaRKO
+
+//@version=4
+study("Garch(1,1)",precision=10)
+dataChoice=input(title="Data Type", defval="Projected Deviation in %", options=["Projected Variance in %", "Projected Deviation in %"])
+timeFrame=timeframe.period
+
+
+//Length Values Based on Chart TimeFrame
+length=if timeframe.period=="1" or timeframe.period=="60"
+    60  //The 60 here represents the 60 seconds that make up 1 min, if that's the timeframe you're using; while if you're using the hourly it will repesent the 60mins that make up each hour. 
+else if timeframe.isminutes==true
+    timeframe.multiplier
+else if timeframe.period=="D"
+    24 //The 24 here represents the 24 hours that make up a day.
+else if timeframe.isdaily==true
+    24*timeframe.multiplier
+else if timeframe.period=="W"
+    5 //The 5 here represents the number of trading days that make up a week.
+else if timeframe.isweekly==true
+    5*timeframe.multiplier
+else if timeframe.period=="M"
+    25 //This 25 represents the 25 trading days that make up a month. 25 days is used because it is the number originally used by JP Morgan in their calculations.
+else if timeframe.ismonthly==true
+    25*timeframe.multiplier
+    
+
+//Lagged Return and Lagged Variance 
+laggedReturn=log(close[1]/close[2])
+laggedVariance=variance(close[1],1)
+squaredLaggedReturn=pow(laggedReturn,2)
+
+
+//Automated Beta Coefficient Optimization:
+
+//JP Morgan calculated the realized variance as the equally-weighted average of the squared lagged return. 
+realizedVar=sma(squaredLaggedReturn,length)
+
+//Sum of Squared Errors (SSE) of Exponentially Weighted Moving Average and Realized Variance
+//SSE=sum(pow(EWMA-realizedVar),2),length)
+//EWMA=(lambda*laggedVariance)+(1-lambda)*squaredLaggedReturn
+//Here the SSE of every EWMA, with varying lambda weights, is calculated
+sse1	=	sum(pow((((0.01	*laggedVariance)	+	(0.99	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse2	=	sum(pow((((0.02	*laggedVariance)	+	(0.98	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse3	=	sum(pow((((0.03	*laggedVariance)	+	(0.97	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse4	=	sum(pow((((0.04	*laggedVariance)	+	(0.96	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse5	=	sum(pow((((0.05	*laggedVariance)	+	(0.95	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse6	=	sum(pow((((0.06	*laggedVariance)	+	(0.94	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse7	=	sum(pow((((0.07	*laggedVariance)	+	(0.93	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse8	=	sum(pow((((0.08	*laggedVariance)	+	(0.92	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse9	=	sum(pow((((0.09	*laggedVariance)	+	(0.91	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse10	=	sum(pow((((0.10	*laggedVariance)	+	(0.90	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse11	=	sum(pow((((0.11	*laggedVariance)	+	(0.89	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse12	=	sum(pow((((0.12	*laggedVariance)	+	(0.88	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse13	=	sum(pow((((0.13	*laggedVariance)	+	(0.87	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse14	=	sum(pow((((0.14	*laggedVariance)	+	(0.86	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse15	=	sum(pow((((0.15	*laggedVariance)	+	(0.85	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse16	=	sum(pow((((0.16	*laggedVariance)	+	(0.84	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse17	=	sum(pow((((0.17	*laggedVariance)	+	(0.83	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse18	=	sum(pow((((0.18	*laggedVariance)	+	(0.82	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse19	=	sum(pow((((0.19	*laggedVariance)	+	(0.81	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse20	=	sum(pow((((0.20	*laggedVariance)	+	(0.80	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse21	=	sum(pow((((0.21	*laggedVariance)	+	(0.79	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse22	=	sum(pow((((0.22	*laggedVariance)	+	(0.78	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse23	=	sum(pow((((0.23	*laggedVariance)	+	(0.77	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse24	=	sum(pow((((0.24	*laggedVariance)	+	(0.76	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse25	=	sum(pow((((0.25	*laggedVariance)	+	(0.75	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse26	=	sum(pow((((0.26	*laggedVariance)	+	(0.74	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse27	=	sum(pow((((0.27	*laggedVariance)	+	(0.73	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse28	=	sum(pow((((0.28	*laggedVariance)	+	(0.72	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse29	=	sum(pow((((0.29	*laggedVariance)	+	(0.71	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse30	=	sum(pow((((0.30	*laggedVariance)	+	(0.70	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse31	=	sum(pow((((0.31	*laggedVariance)	+	(0.69	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse32	=	sum(pow((((0.32	*laggedVariance)	+	(0.68	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse33	=	sum(pow((((0.33	*laggedVariance)	+	(0.67	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse34	=	sum(pow((((0.34	*laggedVariance)	+	(0.66	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse35	=	sum(pow((((0.35	*laggedVariance)	+	(0.65	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse36	=	sum(pow((((0.36	*laggedVariance)	+	(0.64	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse37	=	sum(pow((((0.37	*laggedVariance)	+	(0.63	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse38	=	sum(pow((((0.38	*laggedVariance)	+	(0.62	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse39	=	sum(pow((((0.39	*laggedVariance)	+	(0.61	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse40	=	sum(pow((((0.40	*laggedVariance)	+	(0.60	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse41	=	sum(pow((((0.41	*laggedVariance)	+	(0.59	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse42	=	sum(pow((((0.42	*laggedVariance)	+	(0.58	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse43	=	sum(pow((((0.43	*laggedVariance)	+	(0.57	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse44	=	sum(pow((((0.44	*laggedVariance)	+	(0.56	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse45	=	sum(pow((((0.45	*laggedVariance)	+	(0.55	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse46	=	sum(pow((((0.46	*laggedVariance)	+	(0.54	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse47	=	sum(pow((((0.47	*laggedVariance)	+	(0.53	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse48	=	sum(pow((((0.48	*laggedVariance)	+	(0.52	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse49	=	sum(pow((((0.49	*laggedVariance)	+	(0.51	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse50	=	sum(pow((((0.50	*laggedVariance)	+	(0.50	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse51	=	sum(pow((((0.51	*laggedVariance)	+	(0.49	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse52	=	sum(pow((((0.52	*laggedVariance)	+	(0.48	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse53	=	sum(pow((((0.53	*laggedVariance)	+	(0.47	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse54	=	sum(pow((((0.54	*laggedVariance)	+	(0.46	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse55	=	sum(pow((((0.55	*laggedVariance)	+	(0.45	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse56	=	sum(pow((((0.56	*laggedVariance)	+	(0.44	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse57	=	sum(pow((((0.57	*laggedVariance)	+	(0.43	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse58	=	sum(pow((((0.58	*laggedVariance)	+	(0.42	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse59	=	sum(pow((((0.59	*laggedVariance)	+	(0.41	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse60	=	sum(pow((((0.60	*laggedVariance)	+	(0.40	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse61	=	sum(pow((((0.61	*laggedVariance)	+	(0.39	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse62	=	sum(pow((((0.62	*laggedVariance)	+	(0.38	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse63	=	sum(pow((((0.63	*laggedVariance)	+	(0.37	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse64	=	sum(pow((((0.64	*laggedVariance)	+	(0.36	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse65	=	sum(pow((((0.65	*laggedVariance)	+	(0.35	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse66	=	sum(pow((((0.66	*laggedVariance)	+	(0.34	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse67	=	sum(pow((((0.67	*laggedVariance)	+	(0.33	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse68	=	sum(pow((((0.68	*laggedVariance)	+	(0.32	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse69	=	sum(pow((((0.69	*laggedVariance)	+	(0.31	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse70	=	sum(pow((((0.70	*laggedVariance)	+	(0.30	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse71	=	sum(pow((((0.71	*laggedVariance)	+	(0.29	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse72	=	sum(pow((((0.72	*laggedVariance)	+	(0.28	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse73	=	sum(pow((((0.73	*laggedVariance)	+	(0.27	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse74	=	sum(pow((((0.74	*laggedVariance)	+	(0.26	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse75	=	sum(pow((((0.75	*laggedVariance)	+	(0.25	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse76	=	sum(pow((((0.76	*laggedVariance)	+	(0.24	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse77	=	sum(pow((((0.77	*laggedVariance)	+	(0.23	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse78	=	sum(pow((((0.78	*laggedVariance)	+	(0.22	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse79	=	sum(pow((((0.79	*laggedVariance)	+	(0.21	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse80	=	sum(pow((((0.80	*laggedVariance)	+	(0.20	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse81	=	sum(pow((((0.81	*laggedVariance)	+	(0.19	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse82	=	sum(pow((((0.82	*laggedVariance)	+	(0.18	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse83	=	sum(pow((((0.83	*laggedVariance)	+	(0.17	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse84	=	sum(pow((((0.84	*laggedVariance)	+	(0.16	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse85	=	sum(pow((((0.85	*laggedVariance)	+	(0.15	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse86	=	sum(pow((((0.86	*laggedVariance)	+	(0.14	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse87	=	sum(pow((((0.87	*laggedVariance)	+	(0.13	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse88	=	sum(pow((((0.88	*laggedVariance)	+	(0.12	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse89	=	sum(pow((((0.89	*laggedVariance)	+	(0.11	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse90	=	sum(pow((((0.90	*laggedVariance)	+	(0.10	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse91	=	sum(pow((((0.91	*laggedVariance)	+	(0.09	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse92	=	sum(pow((((0.92	*laggedVariance)	+	(0.08	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse93	=	sum(pow((((0.93	*laggedVariance)	+	(0.07	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse94	=	sum(pow((((0.94	*laggedVariance)	+	(0.06	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse95	=	sum(pow((((0.95	*laggedVariance)	+	(0.05	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse96	=	sum(pow((((0.96	*laggedVariance)	+	(0.04	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse97	=	sum(pow((((0.97	*laggedVariance)	+	(0.03	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse98	=	sum(pow((((0.98	*laggedVariance)	+	(0.02	*squaredLaggedReturn))		-	realizedVar),2),length)
+sse99	=	sum(pow((((0.99	*laggedVariance)	+	(0.01	*squaredLaggedReturn))		-	realizedVar),2),length)
+
+//Find the Minimal SSE
+test01=min(sse1,sse2,sse3,sse4,sse5,sse6,sse7,sse8,sse9)
+test02=min(sse10,sse11,sse12,sse13,sse14,sse15,sse16,sse17,sse18,sse19)
+test03=min(sse20,sse21,sse22,sse23,sse24,sse25,sse26,sse27,sse28,sse29)
+test04=min(sse30,sse31,sse32,sse33,sse34,sse35,sse36,sse37,sse38,sse39)
+test05=min(sse40,sse41,sse42,sse43,sse44,sse45,sse46,sse47,sse48,sse49)
+test06=min(sse50,sse51,sse52,sse53,sse54,sse55,sse56,sse57,sse58,sse59)
+test07=min(sse60,sse61,sse62,sse63,sse64,sse65,sse66,sse67,sse68,sse69)
+test08=min(sse70,sse71,sse72,sse73,sse74,sse75,sse76,sse77,sse78,sse79)
+test09=min(sse80,sse81,sse82,sse83,sse84,sse85,sse86,sse87,sse88,sse89)
+test10=min(sse90,sse91,sse92,sse93,sse94,sse95,sse96,sse97,sse98,sse99)
+optimalSSE=min(test01,test02,test03,test04,test05,test06,test07,test08,test09,test10)
+
+
+//Find Corresponding Lambda of the EWMA from the Minimal SSE
+Lambda=iff(optimalSSE==sse1,0.01,
+     iff(optimalSSE==sse2,0.02,
+     iff(optimalSSE==sse3,0.03,
+     iff(optimalSSE==sse4,0.04,
+     iff(optimalSSE==sse5,0.05,
+     iff(optimalSSE==sse6,0.06,
+     iff(optimalSSE==sse7,0.07,
+     iff(optimalSSE==sse8,0.08,
+     iff(optimalSSE==sse9,0.09,
+     iff(optimalSSE==sse10,0.10,
+     iff(optimalSSE==sse11,0.11,
+     iff(optimalSSE==sse12,0.12,
+     iff(optimalSSE==sse13,0.13,
+     iff(optimalSSE==sse14,0.14,
+     iff(optimalSSE==sse15,0.15,
+     iff(optimalSSE==sse16,0.16,
+     iff(optimalSSE==sse17,0.17,
+     iff(optimalSSE==sse18,0.18,
+     iff(optimalSSE==sse19,0.19,
+     iff(optimalSSE==sse20,0.20,
+     iff(optimalSSE==sse21,0.21,
+     iff(optimalSSE==sse22,0.22,
+     iff(optimalSSE==sse23,0.23,
+     iff(optimalSSE==sse24,0.24,
+     iff(optimalSSE==sse25,0.25,
+     iff(optimalSSE==sse26,0.26,
+     iff(optimalSSE==sse27,0.27,
+     iff(optimalSSE==sse28,0.28,
+     iff(optimalSSE==sse29,0.29,
+     iff(optimalSSE==sse31,0.31,
+     iff(optimalSSE==sse32,0.32,
+     iff(optimalSSE==sse33,0.33,
+     iff(optimalSSE==sse34,0.34,
+     iff(optimalSSE==sse35,0.35,
+     iff(optimalSSE==sse36,0.36,
+     iff(optimalSSE==sse37,0.37,
+     iff(optimalSSE==sse38,0.38,
+     iff(optimalSSE==sse39,0.39,
+     iff(optimalSSE==sse41,0.41,
+     iff(optimalSSE==sse42,0.42,
+     iff(optimalSSE==sse43,0.43,
+     iff(optimalSSE==sse44,0.44,
+     iff(optimalSSE==sse45,0.45,
+     iff(optimalSSE==sse46,0.46,
+     iff(optimalSSE==sse47,0.47,
+     iff(optimalSSE==sse48,0.48,
+     iff(optimalSSE==sse49,0.49,
+     iff(optimalSSE==sse51,0.51,
+     iff(optimalSSE==sse52,0.52,
+     iff(optimalSSE==sse53,0.53,
+     iff(optimalSSE==sse54,0.54,
+     iff(optimalSSE==sse55,0.55,
+     iff(optimalSSE==sse56,0.56,
+     iff(optimalSSE==sse57,0.57,
+     iff(optimalSSE==sse58,0.58,
+     iff(optimalSSE==sse59,0.59,
+     iff(optimalSSE==sse61,0.61,
+     iff(optimalSSE==sse62,0.62,
+     iff(optimalSSE==sse63,0.63,
+     iff(optimalSSE==sse64,0.64,
+     iff(optimalSSE==sse65,0.65,
+     iff(optimalSSE==sse66,0.66,
+     iff(optimalSSE==sse67,0.67,
+     iff(optimalSSE==sse68,0.68,
+     iff(optimalSSE==sse69,0.69,
+     iff(optimalSSE==sse71,0.71,
+     iff(optimalSSE==sse72,0.72,
+     iff(optimalSSE==sse73,0.73,
+     iff(optimalSSE==sse74,0.74,
+     iff(optimalSSE==sse75,0.75,
+     iff(optimalSSE==sse76,0.76,
+     iff(optimalSSE==sse77,0.77,
+     iff(optimalSSE==sse78,0.78,
+     iff(optimalSSE==sse79,0.79,
+     iff(optimalSSE==sse81,0.81,
+     iff(optimalSSE==sse82,0.82,
+     iff(optimalSSE==sse83,0.83,
+     iff(optimalSSE==sse84,0.84,
+     iff(optimalSSE==sse85,0.85,
+     iff(optimalSSE==sse86,0.86,
+     iff(optimalSSE==sse87,0.87,
+     iff(optimalSSE==sse88,0.88,
+     iff(optimalSSE==sse89,0.89,
+     iff(optimalSSE==sse91,0.91,
+     iff(optimalSSE==sse92,0.92,
+     iff(optimalSSE==sse93,0.93,
+     iff(optimalSSE==sse94,0.94,
+     iff(optimalSSE==sse95,0.95,
+     iff(optimalSSE==sse96,0.96,
+     iff(optimalSSE==sse97,0.97,
+     iff(optimalSSE==sse98,0.98,
+     iff(optimalSSE==sse99,0.99,
+     0.94)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) //0.94 is the default Lambda weight proposed by JP Morgan, but this number is highly disputed, which is why this script calculates the Lambda based on timeframe and realized variance rather than just using JP Morgan's number.
+
+//Calculate Beta. The lambda in the EWMA model and the Beta in the GARCH model are analagous.
+Beta=Lambda
+
+//Calculate Alpha and Gamma Weights. The sum of Alpha and Gamma must equal (1-Beta)
+
+//Update 1:
+//I wrote a longer version of this script that calculated the Alpha and Gamma weights using the same SSE method used above. 
+//The SSE method showed that the optimal Alpha weight was usually around 98.5% of (1-Beta) and Gamma usually was around 1.5% of (1-Beta), across all time frames, except for the 1 min time frame.
+//On the 1min time frame the optimal Gamma and Alpha were usually equally weighted.
+//I didn't include the extra SSE optimization for Alpha and Gamma because it would make the code way too long.
+
+Alpha=if timeframe.period=="1" 
+    (1-Beta)*0.5
+else
+    (1-Beta)*0.985
+
+Gamma=1-Beta-Alpha
+
+//GARCH(1,1) Calculation
+longrunVariance=sma(laggedVariance,length)
+GARCH=(Gamma*longrunVariance)+(Alpha*squaredLaggedReturn)+(Beta*laggedVariance)
+
+//Projected Variance
+perForward=input(0,title="How many periods you want to project forward")
+
+//GARCH already projects the variance and deviation for the current day, so if perForward is 0, then the projectedVariance will just equal GARCH.
+projectedVariance=if perForward==0
+    GARCH
+else
+    longrunVariance+pow((Alpha+Beta),perForward)*(GARCH-longrunVariance)
+
+//Projected Deviation Calculation
+projectedDeviation=sqrt(projectedVariance)
+
+//What Data Do You Want Shown
+projection=if  dataChoice=="Projected Variance in %"
+    projectedVariance*100
+else if dataChoice=="Projected Deviation in %"
+    projectedDeviation*100
+
+plot(projection,title="Projected Volatility Data [in percent]", color=color.yellow, offset=perForward,style=plot.style_columns)
