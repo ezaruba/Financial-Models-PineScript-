@@ -1,0 +1,228 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © SegaRKO
+
+//@version=4
+study("Implied Volatility Suite")
+
+//Implied Volatility Type
+VolCalc= input(title="Calculation of Implied Volatility", defval="Model Implied Volatility", options=["Model Implied Volatility","VixFix"])
+
+//Model Implied Volatility
+src=close
+Minutes = input(0, title="Minutes until expiry (Model-Only)")
+Hours = input(0, title="Hours until expiry (Model-Only)")
+Days = input(365, minval=0, defval=365, title="Days until expiry, including weekends and holidays (Model-Only)")
+Expiry = (Hours + Minutes / 60) / 24 + Days
+IVlen=365
+Interval_Width = 1
+
+LogReturn = log(close[1] / close[2])
+Average = sma(LogReturn, IVlen)
+STDEV = stdev(LogReturn, IVlen)
+Expiry_Average = Expiry * Average
+Expiry_STDEV = STDEV * sqrt(Expiry)
+
+upper = close * exp(Expiry_Average + Interval_Width * Expiry_STDEV)
+lower = close * exp(Expiry_Average - Interval_Width * Expiry_STDEV)
+
+width = upper - lower
+standard_dev = width / 2
+IV = (standard_dev / (close * sqrt(Expiry/365)))*100
+
+//Volatility Smile Model
+//1 Standard Deviation OTM Call Option/ITM Puts Option IV
+SD1=stdev(close,IVlen)
+OTM1=SD1+close
+
+LogReturnOTM1 = log(OTM1[1] / OTM1[2])
+AverageOTM1 = sma(LogReturnOTM1, IVlen)
+STDEVOTM1 = stdev(LogReturnOTM1, IVlen)
+Expiry_AverageOTM1 = Expiry * AverageOTM1
+Expiry_STDEVOTM1 = STDEVOTM1 * sqrt(Expiry)
+
+upperOTM1 = OTM1 * exp(Expiry_AverageOTM1 + Interval_Width * Expiry_STDEVOTM1)
+lowerOTM1 = OTM1 * exp(Expiry_AverageOTM1 - Interval_Width * Expiry_STDEVOTM1)
+
+widthOTM1 = upperOTM1 - lowerOTM1
+standard_devOTM1 = widthOTM1 / 2
+IV_OTM1 = (standard_devOTM1 / (OTM1 * sqrt(Expiry/365)))*100
+
+//1 Standard Deviation ITM Call Option/OTM Put Option IV
+ITM1=close-SD1
+
+LogReturnITM1 = log(ITM1[1] / ITM1[2])
+AverageITM1 = sma(LogReturnITM1, IVlen)
+STDEVITM1 = stdev(LogReturnITM1, IVlen)
+Expiry_AverageITM1 = Expiry * AverageITM1
+Expiry_STDEVITM1 = STDEVITM1 * sqrt(Expiry)
+
+upperITM1 = ITM1 * exp(Expiry_AverageITM1 + Interval_Width * Expiry_STDEVITM1)
+lowerITM1 = ITM1 * exp(Expiry_AverageITM1 - Interval_Width * Expiry_STDEVITM1)
+
+widthITM1 = upperITM1 - lowerITM1
+standard_devITM1 = widthITM1 / 2
+IV_ITM1 = (standard_devITM1 / (ITM1 * sqrt(Expiry/365)))*100
+
+
+//2 Standard Deviation OTM Call Option/ITM Puts Option IV
+SD2=stdev(close,IVlen)*2
+OTM2=SD2+close
+
+LogReturnOTM2 = log(OTM2[1] / OTM2[2])
+AverageOTM2 = sma(LogReturnOTM2, IVlen)
+STDEVOTM2 = stdev(LogReturnOTM2, IVlen)
+Expiry_AverageOTM2 = Expiry * AverageOTM2
+Expiry_STDEVOTM2 = STDEVOTM2 * sqrt(Expiry)
+
+upperOTM2 = OTM2 * exp(Expiry_AverageOTM2 + Interval_Width * Expiry_STDEVOTM2)
+lowerOTM2 = OTM2 * exp(Expiry_AverageOTM2 - Interval_Width * Expiry_STDEVOTM2)
+
+widthOTM2 = upperOTM2 - lowerOTM2
+standard_devOTM2 = widthOTM2 / 2
+IV_OTM2 = (standard_devOTM2 / (OTM2 * sqrt(Expiry/365)))*100
+
+//2 Standard Deviation ITM Call Option/OTM Put Option IV
+ITM2=close-SD2
+
+LogReturnITM2 = log(ITM2[1] / ITM2[2])
+AverageITM2 = sma(LogReturnITM2, IVlen)
+STDEVITM2 = stdev(LogReturnITM2, IVlen)
+Expiry_AverageITM2 = Expiry * AverageITM2
+Expiry_STDEVITM2 = STDEVITM2 * sqrt(Expiry)
+
+upperITM2 = ITM2 * exp(Expiry_AverageITM2 + Interval_Width * Expiry_STDEVITM2)
+lowerITM2 = ITM2 * exp(Expiry_AverageITM2 - Interval_Width * Expiry_STDEVITM2)
+
+widthITM2 = upperITM2 - lowerITM2
+standard_devITM2 = widthITM2 / 2
+IV_ITM2 = (standard_devITM2 / (ITM2 * sqrt(Expiry/365)))*100
+
+//3 Standard Deviation OTM Call Option/ITM Puts Option IV
+SD3=stdev(close,IVlen)*3
+OTM3=SD2+close
+
+LogReturnOTM3 = log(OTM3[1] / OTM3[2])
+AverageOTM3 = sma(LogReturnOTM3, IVlen)
+STDEVOTM3 = stdev(LogReturnOTM3, IVlen)
+Expiry_AverageOTM3 = Expiry * AverageOTM3
+Expiry_STDEVOTM3 = STDEVOTM3 * sqrt(Expiry)
+
+upperOTM3 = OTM3 * exp(Expiry_AverageOTM3 + Interval_Width * Expiry_STDEVOTM3)
+lowerOTM3 = OTM3 * exp(Expiry_AverageOTM3 - Interval_Width * Expiry_STDEVOTM3)
+
+widthOTM3 = upperOTM3 - lowerOTM3
+standard_devOTM3 = widthOTM3 / 2
+IV_OTM3 = (standard_devOTM3 / (OTM3 * sqrt(Expiry/365)))*100
+
+
+//3 Standard Deviation ITM Call Option/OTM Put Option IV
+ITM3=close-SD3
+
+LogReturnITM3 = log(ITM3[1] / ITM3[2])
+AverageITM3 = sma(LogReturnITM3, IVlen)
+STDEVITM3 = stdev(LogReturnITM3, IVlen)
+Expiry_AverageITM3 = Expiry * AverageITM3
+Expiry_STDEVITM3 = STDEVITM3 * sqrt(Expiry)
+
+upperITM3 = ITM3 * exp(Expiry_AverageITM3 + Interval_Width * Expiry_STDEVITM3)
+lowerITM3 = ITM3 * exp(Expiry_AverageITM3 - Interval_Width * Expiry_STDEVITM3)
+
+widthITM3 = upperITM3 - lowerITM3
+standard_devITM3 = widthITM3 / 2
+IV_ITM3 = (standard_devITM3 / (ITM3 * sqrt(Expiry/365)))*100
+
+//Model-Based Skew Index
+Model_Based_Skew=avg(IV_OTM1,IV_OTM2,IV_OTM3)-avg(IV_ITM1,IV_ITM2,IV_ITM3)
+
+
+//VixFix Implied Vol.
+VIXFixLength = input(252, defval=22, title="VixFix Length (recommended values: 9, 22, 66, 132, or 252)")
+VIXlength2 =252
+//Synthetic IV (VixFix) Calculation
+VixFix = (highest(close, VIXFixLength) - low) / highest(close, VIXFixLength) * 100
+
+
+//VixFix Volatility Smile
+//1 Standard Deviation OTM Call Option/ITM Put Option IV
+VixOTM1Close=stdev(close,VIXFixLength)+close
+VixOTM1Low=stdev(low,VIXFixLength)+low
+VixOTM1=(highest(VixOTM1Close, VIXFixLength) - VixOTM1Low) / highest(VixOTM1Close, VIXFixLength) * 100
+//1 Standard Deviation ITM Call Option/OTM Put Option IV
+VixITM1Close=close-stdev(close,VIXFixLength)
+VixITM1Low=low-stdev(low,VIXFixLength)
+VixITM1=(highest(VixITM1Close, VIXFixLength) - VixITM1Low) / highest(VixITM1Close, VIXFixLength) * 100
+
+//2 Standard Deviation OTM Call Option/ITM Put Option IV
+VixOTM2Close=(stdev(close,VIXFixLength)*2)+close
+VixOTM2Low=(stdev(low,VIXFixLength)*2)+low
+VixOTM2=(highest(VixOTM2Close, VIXFixLength) - VixOTM2Low) / highest(VixOTM2Close, VIXFixLength) * 100
+//2 Standard Deviation ITM Call Option/OTM Put Option IV
+VixITM2Close=close-(stdev(close,VIXFixLength)*2)
+VixITM2Low=low-(stdev(low,VIXFixLength)*2)
+VixITM2=(highest(VixITM2Close, VIXFixLength) - VixITM2Low) / highest(VixITM2Close, VIXFixLength) * 100
+
+//3 Standard Deviation OTM Call Option/ITM Put Option IV
+VixOTM3Close=(stdev(close,VIXFixLength)*3)+close
+VixOTM3Low=(stdev(low,VIXFixLength)*3)+low
+VixOTM3=(highest(VixOTM3Close, VIXFixLength) - VixOTM3Low) / highest(VixOTM3Close, VIXFixLength) * 100
+//1 Standard Deviation ITM Call Option/OTM Put Option IV
+VixITM3Close=close-(stdev(close,VIXFixLength)*3)
+VixITM3Low=low-(stdev(low,VIXFixLength)*3)
+VixITM3=(highest(VixITM3Close, VIXFixLength) - VixITM3Low) / highest(VixITM3Close, VIXFixLength) * 100
+
+VixFix_Skew=avg(VixOTM1,VixOTM2,VixOTM3)-avg(VixITM1,VixITM2,VixITM3)
+
+//Logic Statements
+//Implied Volatility Logic
+Volatility=if(VolCalc=="VixFix")
+    VixFix
+else
+    IV
+
+//Length for rank and percentile logic
+Len=if(VolCalc=="VixFix")
+    VIXlength2
+else
+    IVlen
+    
+//Implied Volatility Rank
+IVR=(Volatility - lowest(Volatility, Len)) / 
+   (highest(Volatility, Len) - lowest(Volatility, Len)) * 100
+   
+//Implied Volatility Percentile
+pctileRank = percentrank(Volatility, Len)
+
+//Skew Index Logic
+Skew_Index=if(VolCalc=="VixFix")
+    VixFix_Skew
+else
+    Model_Based_Skew
+
+VolatilityChoice= input(title="Choose Volatility Data", defval="IV Rank", options=["Implied Volatility", "IV Rank","IV Percentile","Volatility Skew Index"])
+
+//Volatiliy Data Logic
+VolatilityData=if(VolatilityChoice=="IV Percentile")
+    pctileRank
+else if(VolatilityChoice=="IV Rank")
+    IVR
+else if(VolatilityChoice=="Volatility Skew Index")
+    Skew_Index
+else if(VolatilityChoice=="Implied Volatility")
+    Volatility
+
+
+//Color Logic
+col=if(VolatilityChoice=="IV Percentile")
+    pctileRank < 50 ? color.red : pctileRank >= 50 ? color.green : color.green
+else if(VolatilityChoice=="IV Rank")
+    IVR < 50 ? color.red : IVR >= 50 ? color.green : color.green
+else if(VolatilityChoice=="Volatility Skew Index")
+    color.aqua
+else if(VolatilityChoice=="Implied Volatility")
+    color.yellow
+
+
+//Plot Statements
+plot(VolatilityData, color=col, title="Volatility Data")
+
+
