@@ -7,7 +7,7 @@ study("Implied Volatility Suite",precision=1)
 //Implied Volatility Type
 VolCalc= input(title="Calculation of Implied Volatility", defval="Model Implied Volatility", options=["Model Implied Volatility","VixFix"])
 
-//Model Implied Volatility
+//Model Expiry and Length Parameters
 src=close
 Minutes = input(0, title="Minutes until expiry (Model-Only)")
 Hours = input(0, title="Hours until expiry (Model-Only)")
@@ -16,21 +16,7 @@ Expiry = (Hours + Minutes / 60) / 24 + Days
 IVlen=365
 Interval_Width = 1
 
-LogReturn = log(close[1] / close[2])
-Average = sma(LogReturn, IVlen)
-STDEV = stdev(LogReturn, IVlen)
-Expiry_Average = Expiry * Average
-Expiry_STDEV = STDEV * sqrt(Expiry)
-
-upper = close * exp(Expiry_Average + Interval_Width * Expiry_STDEV)
-lower = close * exp(Expiry_Average - Interval_Width * Expiry_STDEV)
-
-width = upper - lower
-standard_dev = width / 2
-IV = (standard_dev / (close * sqrt(Expiry/365)))*100
-
-//Model-Based Volatility Smile 
-
+//Model-Based Volatility Smile Functions
 Model_Upside(i) =>
     UP=(stdev(src,IVlen)*i)+src
     LogReturnUP=log(UP[1]/UP[2])
@@ -61,16 +47,14 @@ Model_Downside(i) =>
 
 Model_Based_Skew=avg(Model_Upside(1),Model_Upside(2),Model_Upside(3))-avg(Model_Downside(1),Model_Downside(2),Model_Downside(3))
 
+//Model-Based Implied Vol.
+IV=(Model_Upside(0)+Model_Downside(0))/2
 
 
-//VixFix Implied Vol.
-VIXFixLength = input(252, defval=22, title="VixFix Length (recommended values: 9, 22, 66, 132, or 252)")
+//VixFix Length Parameters
+VIXFixLength = input(252, defval=252, title="VixFix Length (recommended values: 9, 22, 66, 132, or 252)")
 VIXlength2 =252
-//Synthetic IV (VixFix) Calculation
-VixFix = (highest(close, VIXFixLength) - low) / highest(close, VIXFixLength) * 100
-
-
-//VixFix Volatility Smile
+//VixFix Volatility Smile Functions
 VIX_Upside(i) =>
     VIXUPClose=(stdev(close,VIXFixLength)*i)+close
     VIXUPLow=(stdev(low,VIXFixLength)*i)+low
@@ -83,6 +67,8 @@ VIX_Downside(i) =>
 
 VixFix_Skew=avg(VIX_Upside(1),VIX_Upside(2),VIX_Upside(3))-avg(VIX_Downside(1),VIX_Downside(2),VIX_Downside(3))
 
+//VixFix Implied Vol.
+VixFix=(VIX_Upside(0)+VIX_Downside(0))/2
 
 //Logic Statements
 //Implied Volatility Logic
