@@ -31,7 +31,7 @@ d1=(log(discount1/K)+(r+pow(sigma,2)/2)*T)/(sigma*sqrt(T))
 d2=d1-(sigma*sqrt(T))
 
 //American Option Method 2. This calculates the price of an option that expires on the t2 date.
-PV2=(D1*exp(-(r)*(t1/len)))
+PV2=(D1*exp(-(r)*(t1/len))) 
 discount2=S-PV2
 ad1=(log(discount2/K)+(r+pow(sigma,2)/2)*(t2/len))/(sigma*sqrt(t2/len))
 ad2=ad1-(sigma*sqrt(t2/len))
